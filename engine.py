@@ -1,6 +1,11 @@
 from board import displayBoard, populateBoardFromFEN
-from setup import startingFEN, board, pieceSymbols, activeColour
+from setup import currentPosition, board, pieceSymbol, activeColour, boardLookup, pieceColour, pieceOffset, moveLimit
+from move import generateMoves, displayMoves
 
-board = populateBoardFromFEN(board, startingFEN[0], activeColour)
+board = populateBoardFromFEN(board, currentPosition, boardLookup)
 
-displayBoard(board, pieceSymbols)
+displayBoard(board, pieceSymbol, boardLookup, activeColour)
+
+moves = generateMoves(board, activeColour, pieceOffset, pieceColour, moveLimit)
+
+displayMoves(moves)
