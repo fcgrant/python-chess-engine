@@ -1,29 +1,31 @@
+from setup import startingPosition, pieceSymbol, boardLookup
 
-# Contains code pertinent to displaying, formatting, and changing the properties
-# off the chess board
-
-def displayBoard(board: list, pieceSymbol: map, lookup: list, activeColour: str):
+def displayBoard(board: list, playerColour: str):
     
-    boardDisplay: list = [ square for index, square in enumerate(board) if index in lookup]    
+    # Strip away the border symbols when displaying the board
+    boardDisplay: list = [ square for index, square in enumerate(board) if index in boardLookup]    
     
-    if activeColour == "w": boardDisplay.reverse()
-    
+    # If the the human player is white, we should display the board with the 
+    # white pieces at the bottom
+    # If playerColour == "w": ...
     for index, square in enumerate(boardDisplay):
         if index % 8 == 0 and index != 0: print()
         print(pieceSymbol[square], end=" ")
         
     print()
         
-def populateBoardFromFEN(board: list, FEN: str, lookup: list):
+def populateBoardFromFEN(board: list):
+    
     lookupPosition = 0
-    FEN = FEN.replace("/", "")[::-1]
-    for piece in FEN:
-        boardPosition = lookup[lookupPosition]
+    position = startingPosition.replace("/", "")[::-1]
+    
+    for piece in position:
+        boardPosition = boardLookup[lookupPosition]
         if piece.isnumeric():
-            for position in range(int(piece)):
-                board[boardPosition] = "." 
+            for square in range(int(piece)):
+                board[boardPosition] = "."
                 lookupPosition += 1
-                boardPosition = lookup[lookupPosition]
+                boardPosition = boardLookup[lookupPosition]
         else:
             board[boardPosition] = piece
             lookupPosition += 1

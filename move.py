@@ -1,7 +1,12 @@
-from setup import rank2, rank7
-def generateMoves(board: list, activeColour: str, pieceOffset: list, pieceColour: map, moveLimit: map):
+from setup import rank2, rank7, pieceColour, pieceOffset, moveLimit, positionLookup
+from random import randint
+
+def generateMoves(board: list, activeColour: str, enPassantSquare: str):
     moves: list = []
     opponentColour = "b" if activeColour == "w" else "w"
+    
+    # Convert en passant square to board index
+    # enPassantIndex = positionLookup[enPassantSquare]
     
     for position, square in enumerate(board):
         if square == "." or square == 'x': continue
@@ -22,8 +27,9 @@ def generateMoves(board: list, activeColour: str, pieceOffset: list, pieceColour
                 
                 # If the current piece is a pawn and the offset is diagonal, only
                 # allow a single move in this direction if the target square is occupied
-                # by an opponents piece
-                if square in "Pp" and offset in [-11, -9, 9, 11] and pieceColour[targetSquare] != opponentColour: break
+                # by an opponents piece or that square can be captured with en Passant
+                if square in "Pp" and offset in [-11, -9, 9, 11] and \
+                    (pieceColour[targetSquare] != opponentColour): break
                 
                 # If the piece is a pawn, it can only move twice if it is on it's
                 # starting square
@@ -37,14 +43,62 @@ def generateMoves(board: list, activeColour: str, pieceOffset: list, pieceColour
                 
     return moves
 
-def makeMove(board: list, validMoves: list):
+def makeUserMove(board: list, validMoves: list):
     
-    move = input("Move: ")
+    files = "abcdefgh"
+    ranks = "12345678"
+    userMove: str = input("Move: ")
     
-    if len(move) != 4: print("Invalid move")
+    if len(userMove) != 4: 
+        print("Invalid move")
+        return
     
-    if move not in validMoves: print("Invalid move")
+    startingFile = userMove[0]
+    startingRank = userMove[1]
+    targetFile = userMove[2]
+    targetRank = userMove[3]
     
+    if startingFile not in files or targetFile not in files:
+        print("Invalid move")
+        return board
+    if startingRank not in ranks or targetRank not in ranks:
+        print("Invalid move")
+        return board
+    
+    for move in validMoves:
+        startingPosition = positionLookup[startingFile + startingRank]
+        targetPosition = positionLookup[targetFile + targetRank]
+        
+        if move["StartingPosition"] == startingPosition and move["TargetPosition"] == targetPosition:
+            board[targetPosition] = board[startingPosition]
+            board[startingPosition] = "."
+            return board
+      
+    print("Invalid move")
+    return board
+        
+def makeEngineMove(board: list, validMoves: list):
+    
+    # Pick a random move from the moves list
+    index = randint(0, len(validMoves) - 1)
+    move = validMoves[index]
+    
+    targetPosition = ""
+    startingPosition = ""
+    
+    board[move["TargetPosition"]] = board[move["StartingPosition"]]
+    board[move["StartingPosition"]] = "."
+    
+    for position in positionLookup:
+        if positionLookup[position] == move["TargetPosition"]:
+            targetPosition = position
+        elif positionLookup[position] == move["StartingPosition"]:
+            startingPosition = position
+
+    print("Engine moved " + startingPosition + " to " + targetPosition)
+
+    return board
+
 def displayMoves(moves: list):
     
     print("Total moves: " + str(len(moves)))

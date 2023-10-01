@@ -1,11 +1,24 @@
 from board import displayBoard, populateBoardFromFEN
-from setup import currentPosition, board, pieceSymbol, activeColour, boardLookup, pieceColour, pieceOffset, moveLimit
-from move import generateMoves, displayMoves
+from setup import board, activeColour, enPassantSquare
+from move import generateMoves, makeUserMove, makeEngineMove
 
-board = populateBoardFromFEN(board, currentPosition, boardLookup)
+playing = True
+board = populateBoardFromFEN(board)
+playerColour = input("Playing as w or b: ")
 
-displayBoard(board, pieceSymbol, boardLookup, activeColour)
+if playerColour not in ["w", "b"]: exit(1)
+if playerColour == "w": engineColour = "b" 
+else: engineColour = "w"
 
-moves = generateMoves(board, activeColour, pieceOffset, pieceColour, moveLimit)
+while playing:
+    
+    displayBoard(board, activeColour)
 
-displayMoves(moves)
+    moves = generateMoves(board, activeColour, enPassantSquare)
+
+    if activeColour == playerColour:
+        board = makeUserMove(board, moves)
+        activeColour = engineColour
+    else: 
+        board = makeEngineMove(board, moves)
+        activeColour = playerColour
