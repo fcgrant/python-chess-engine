@@ -36,67 +36,33 @@ def generateMoves(board: list, activeColour: str, enPassantSquare: str):
                 if square == "P" and offset == 20 and square not in rank2: break
                 if square == "p" and offset == -20 and square not in rank7: break
                 
+                # If moving to an enpassant square is possible, record the captured
+                # piece as the one in front of the en passant square.
+                
                 moves.append({
                     "StartingPosition": position, "TargetPosition": targetPosition,
                     "MovingPiece": square, "CapturedPiece": targetSquare
                 })
                 
     return moves
-
-def makeUserMove(board: list, validMoves: list):
-    
-    files = "abcdefgh"
-    ranks = "12345678"
-    userMove: str = input("Move: ")
-    
-    if len(userMove) != 4: 
-        print("Invalid move")
-        return
-    
-    startingFile = userMove[0]
-    startingRank = userMove[1]
-    targetFile = userMove[2]
-    targetRank = userMove[3]
-    
-    if startingFile not in files or targetFile not in files:
-        print("Invalid move")
-        return board
-    if startingRank not in ranks or targetRank not in ranks:
-        print("Invalid move")
-        return board
-    
-    for move in validMoves:
-        startingPosition = positionLookup[startingFile + startingRank]
-        targetPosition = positionLookup[targetFile + targetRank]
         
-        if move["StartingPosition"] == startingPosition and move["TargetPosition"] == targetPosition:
-            board[targetPosition] = board[startingPosition]
-            board[startingPosition] = "."
-            return board
-      
-    print("Invalid move")
-    return board
+def makeMove(board: list, move: map):
         
-def makeEngineMove(board: list, validMoves: list):
-    
-    # Pick a random move from the moves list
-    index = randint(0, len(validMoves) - 1)
-    move = validMoves[index]
-    
-    targetPosition = ""
-    startingPosition = ""
-    
     board[move["TargetPosition"]] = board[move["StartingPosition"]]
     board[move["StartingPosition"]] = "."
+
+    return board
+
+def undoMove(board: list, move: map):
     
-    for position in positionLookup:
-        if positionLookup[position] == move["TargetPosition"]:
-            targetPosition = position
-        elif positionLookup[position] == move["StartingPosition"]:
-            startingPosition = position
-
-    print("Engine moved " + startingPosition + " to " + targetPosition)
-
+    originalPosition = move["StartingPosition"]
+    currentPosition = move["TargetPosition"]
+    capturedPiece = move["CapturedPiece"]
+    movedPiece = board[currentPosition]
+    
+    board[originalPosition] = movedPiece
+    board[currentPosition] = capturedPiece
+    
     return board
 
 def displayMoves(moves: list):

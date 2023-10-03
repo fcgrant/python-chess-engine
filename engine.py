@@ -1,6 +1,8 @@
 from board import displayBoard, populateBoardFromFEN
 from setup import board, activeColour, enPassantSquare
-from move import generateMoves, makeUserMove, makeEngineMove
+from move import generateMoves, makeMove, displayMoves
+from user import userMove
+from evaluate import bestMove
 
 playing = True
 board = populateBoardFromFEN(board)
@@ -17,8 +19,14 @@ while playing:
     moves = generateMoves(board, activeColour, enPassantSquare)
 
     if activeColour == playerColour:
-        board = makeUserMove(board, moves)
+        move = userMove(moves)
+        while move != {}:
+            move = userMove(moves)
         activeColour = engineColour
     else: 
-        board = makeEngineMove(board, moves)
+        move = bestMove(moves)
         activeColour = playerColour
+        
+    board = makeMove(board, move)
+    
+    displayMoves([move])
