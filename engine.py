@@ -1,11 +1,19 @@
 from board import displayBoard, populateBoardFromFEN
-from setup import activeColour, enPassantSquare, castlingRights
+from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter
 from move import generateMoves, makeMove, displayMoves
 from user import userMove
 from evaluate import bestMove
 
 playing = True
 board = populateBoardFromFEN()
+gameConfig: map = {
+    "board": board,
+    "activeColour": activeColour,
+    "castlingRights": castlingRights,
+    "enPassantSquare": enPassantSquare,
+    "halfMoveClock": halfMoveClock,
+    "fullMoveCounter": fullMoveCounter
+}
 playerColour = input("Playing as w or b: ")
 
 if playerColour not in ["w", "b"]: exit(1)
@@ -14,19 +22,17 @@ else: engineColour = "w"
 
 while playing:
     
-    displayBoard(board, activeColour)
+    displayBoard(gameConfig)
 
-    moves = generateMoves(board, activeColour, enPassantSquare, castlingRights)
+    moves = generateMoves(gameConfig)
 
-    if activeColour == playerColour:
+    if gameConfig["activeColour"] == playerColour:
         move = userMove(moves)
-        while move != {}:
+        while move == {}:
             move = userMove(moves)
-        activeColour = engineColour
+        gameConfig["activeColour"] = engineColour
     else: 
         move = bestMove(moves)
-        activeColour = playerColour
+        gameConfig["activeColour"] = playerColour
 
-    board = makeMove(board, move)
-    
-    displayMoves([move])
+    gameConfig["board"] = makeMove(gameConfig, move)

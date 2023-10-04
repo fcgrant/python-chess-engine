@@ -67,4 +67,3 @@ castlingRights: str = startingFEN[2]
 enPassantSquare: str = startingFEN[3]
 halfMoveClock: int = int(startingFEN[4])
 fullMoveCounter: int = int(startingFEN[5])
-
