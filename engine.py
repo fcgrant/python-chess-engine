@@ -1,5 +1,5 @@
 from board import displayBoard, populateBoardFromFEN
-from setup import activeColour, enPassantSquare
+from setup import activeColour, enPassantSquare, castlingRights
 from move import generateMoves, makeMove, displayMoves
 from user import userMove
 from evaluate import bestMove
@@ -16,7 +16,7 @@ while playing:
     
     displayBoard(board, activeColour)
 
-    moves = generateMoves(board, activeColour, enPassantSquare)
+    moves = generateMoves(board, activeColour, enPassantSquare, castlingRights)
 
     if activeColour == playerColour:
         move = userMove(moves)
@@ -26,7 +26,7 @@ while playing:
     else: 
         move = bestMove(moves)
         activeColour = playerColour
-        
+
     board = makeMove(board, move)
     
     displayMoves([move])
