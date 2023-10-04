@@ -1,11 +1,11 @@
 from board import displayBoard, populateBoardFromFEN
-from setup import board, activeColour, enPassantSquare
+from setup import activeColour, enPassantSquare
 from move import generateMoves, makeMove, displayMoves
 from user import userMove
 from evaluate import bestMove
 
 playing = True
-board = populateBoardFromFEN(board)
+board = populateBoardFromFEN()
 playerColour = input("Playing as w or b: ")
 
 if playerColour not in ["w", "b"]: exit(1)

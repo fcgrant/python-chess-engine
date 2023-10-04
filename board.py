@@ -1,4 +1,4 @@
-from setup import startingPosition, pieceSymbol, boardLookup
+from setup import startingPosition, pieceSymbol, boardLookup, board
 
 def displayBoard(board: list, playerColour: str):
     
@@ -14,7 +14,7 @@ def displayBoard(board: list, playerColour: str):
         
     print()
         
-def populateBoardFromFEN(board: list):
+def populateBoardFromFEN():
     
     lookupPosition = 0
     position = startingPosition.replace("/", "")[::-1]

@@ -1,5 +1,4 @@
-from setup import rank2, rank7, pieceColour, pieceOffset, moveLimit, positionLookup
-from random import randint
+from setup import rank2, rank7, pieceColour, pieceOffset, moveLimit
 
 def generateMoves(board: list, activeColour: str, enPassantSquare: str):
     moves: list = []
