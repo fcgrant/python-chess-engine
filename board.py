@@ -1,9 +1,9 @@
 from setup import startingPosition, pieceSymbol, boardLookup, board
 
-def displayBoard(gameConfig: map):
+def displayBoard(gameState: map):
     
     # Strip away the border symbols when displaying the board
-    boardDisplay: list = [ square for index, square in enumerate(gameConfig["board"]) if index in boardLookup]    
+    boardDisplay: list = [ square for index, square in enumerate(gameState["board"]) if index in boardLookup]    
     
     # If the the human player is white, we should display the board with the 
     # white pieces at the bottom

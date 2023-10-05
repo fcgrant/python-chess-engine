@@ -6,7 +6,7 @@ from evaluate import bestMove
 
 playing = True
 board = populateBoardFromFEN()
-gameConfig: map = {
+gameState: map = {
     "board": board,
     "activeColour": activeColour,
     "castlingRights": castlingRights,
@@ -22,15 +22,15 @@ else: engineColour = "w"
 
 while playing:
     
-    displayBoard(gameConfig)
+    displayBoard(gameState)
 
-    moves = generateMoves(gameConfig)
+    moves = generateMoves(gameState)
 
-    if gameConfig["activeColour"] == playerColour:
+    if gameState["activeColour"] == playerColour:
         move = userMove(moves)
         while move == {}:
             move = userMove(moves)
     else: 
         move = bestMove(moves)
 
-    gameConfig = makeMove(gameConfig, move)
+    gameState = makeMove(gameState, move)

@@ -1,15 +1,15 @@
 from setup import rank2, rank7, pieceColour, pieceOffset
 
-def generateMoves(gameConfig: map):
+def generateMoves(gameState: map):
     moves: list = []
-    opponentColour = "b" if gameConfig["activeColour"] == "w" else "w"
+    opponentColour = "b" if gameState["activeColour"] == "w" else "w"
     
     # Convert en passant square to board index
     # enPassantIndex = positionLookup[enPassantSquare]
     
-    for position, square in enumerate(gameConfig["board"]):
+    for position, square in enumerate(gameState["board"]):
         if square == "." or square == 'x': continue
-        if pieceColour[square] != gameConfig["activeColour"]: continue
+        if pieceColour[square] != gameState["activeColour"]: continue
         
         for offset in pieceOffset[square]:
             targetPosition = position
@@ -21,19 +21,19 @@ def generateMoves(gameConfig: map):
 
             for move in range(moveLimit):
                 targetPosition += offset
-                targetSquare = gameConfig["board"][targetPosition]
+                targetSquare = gameState["board"][targetPosition]
 
                 # If the target square is off the board, don't consider this offset
                 if targetSquare == 'x': break
 
                 # If the target square contains a friendly piece, don't consider this offset
-                if pieceColour[targetSquare] == gameConfig["activeColour"]: break
+                if pieceColour[targetSquare] == gameState["activeColour"]: break
                 
                 # If the current piece is a pawn and the offset is diagonal, only
                 # allow a single move in this direction if the target square is occupied
                 # by an opponents piece or that square can be captured with en Passant
                 if square in "Pp" and offset in [-11, -9, 9, 11] and \
-                    (pieceColour[targetSquare] != opponentColour or targetPosition == gameConfig["enPassantSquare"]): break
+                    (pieceColour[targetSquare] != opponentColour or targetPosition == gameState["enPassantSquare"]): break
                 
                 # If the piece is a pawn, it can only move twice if it is on it's
                 # starting square
@@ -46,15 +46,15 @@ def generateMoves(gameConfig: map):
                 
                 # If the pawn is making a double move, ensure the square the pawn
                 # is moving over is not occupied
-                if square in "Pp" and offset in [20, -20] and gameConfig["board"][targetPosition + int(offset / 2)] != '.': break
+                if square in "Pp" and offset in [20, -20] and gameState["board"][targetPosition + int(offset / 2)] != '.': break
                 
                 # If moving to an enpassant square is possible, record the captured
                 # piece as the one in front of the en passant square.
                 
                 # Check castling rights for the king to castle king side
-                if square in "Kk" and offset == -2 and square in gameConfig["castlingRights"]:
+                if square in "Kk" and offset == -2 and square in gameState["castlingRights"]:
                     # Check that the kings rook is on it's original square
-                    if gameConfig["board"][position - 3] != "R": break
+                    if gameState["board"][position - 3] != "R": break
                     # Check that the king is not in check
                     
                     # Check that squares between the rook and king are not attacked
@@ -65,9 +65,9 @@ def generateMoves(gameConfig: map):
                     break
                 
                 # Check castling rights for the white king to castle queen side
-                if square == "K" and offset == 2 and "Q" in gameConfig["castlingRights"]:
+                if square == "K" and offset == 2 and "Q" in gameState["castlingRights"]:
                     # Check that the queens rook is on it's original square
-                    if gameConfig["board"][position + 4] != "R": break
+                    if gameState["board"][position + 4] != "R": break
                     # Check that the king is not in check
                     # Check that squares between the rook and king are not attacked
                     moves.append({
@@ -84,14 +84,14 @@ def generateMoves(gameConfig: map):
                 
     return moves
         
-def makeMove(gameConfig: map, move: map):
+def makeMove(gameState: map, move: map):
         
-    board: list = gameConfig["board"]
-    activeColour = gameConfig["activeColour"]
-    castlingRights: str = gameConfig["castlingRights"]
-    enPassantSquare: str = gameConfig["enPassantSquare"]
-    halfMoveClock: int = gameConfig["halfMoveClock"]
-    fullMoveCounter: int = gameConfig["fullMoveCounter"]
+    board: list = gameState["board"]
+    activeColour = gameState["activeColour"]
+    castlingRights: str = gameState["castlingRights"]
+    enPassantSquare: str = gameState["enPassantSquare"]
+    halfMoveClock: int = gameState["halfMoveClock"]
+    fullMoveCounter: int = gameState["fullMoveCounter"]
     
     offset = move["TargetPosition"] - move["StartingPosition"]
     
@@ -140,14 +140,14 @@ def makeMove(gameConfig: map, move: map):
     else: activeColour = "w"
     
     
-    gameConfig["board"] = board
-    gameConfig["activeColour"] = activeColour
-    gameConfig["castlingRights"] = castlingRights
-    gameConfig["enPassantSquare"] = enPassantSquare
-    gameConfig["halfMoveClock"] = halfMoveClock
-    gameConfig["fullMoveCounter"] = fullMoveCounter
+    gameState["board"] = board
+    gameState["activeColour"] = activeColour
+    gameState["castlingRights"] = castlingRights
+    gameState["enPassantSquare"] = enPassantSquare
+    gameState["halfMoveClock"] = halfMoveClock
+    gameState["fullMoveCounter"] = fullMoveCounter
     
-    return gameConfig
+    return gameState
 
 def undoMove(board: list, move: map):
     
