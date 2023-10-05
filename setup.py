@@ -57,6 +57,10 @@ pieceColour: map = {
     "k": "b",
     ".": "No Colour"
 }
+captureList: map = {
+    "w": [],
+    "b": []
+}
 # Track the indexes for the 2nd and 7th rank to see if a pawn can move twice
 rank2: list = [31, 32, 33, 34, 35, 36, 37, 38]
 rank7: list = [81, 82, 83, 84, 85, 86, 87, 88]

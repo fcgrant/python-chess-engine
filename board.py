@@ -1,9 +1,8 @@
 from setup import startingPosition, pieceSymbol, boardLookup, board
 
 def displayBoard(gameState: map):
-    
     # Strip away the border symbols when displaying the board
-    boardDisplay: list = [ square for index, square in enumerate(gameState["board"]) if index in boardLookup]    
+    boardDisplay: list = [ square for index, square in enumerate(gameState["board"]) if index in boardLookup]
     
     # If the the human player is white, we should display the board with the 
     # white pieces at the bottom
@@ -13,11 +12,22 @@ def displayBoard(gameState: map):
         print(pieceSymbol[square], end=" ")
         
     print()
+    
+    for colour in gameState["captureList"]:
+        captureList: list = gameState["captureList"][colour]
+        if len(captureList) == 0: break
+        print("Captured by " + colour + ": ", end="")
+        for piece in captureList:
+            print(pieceSymbol[piece], end=" ")
+    print()
         
 def populateBoardFromFEN():
     
-    # Start at h1 to run through the array and populate with the fen values
     lookupPosition = 0
+    
+    # The FEN string starts with black pieces then works down the ranks, but to
+    # populate the board array starting with white pieces we need to put the FEN 
+    # string into the correct order, starting at a1
     position = startingPosition.split("/")
     position.reverse()
     position = ''.join(position)

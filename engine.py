@@ -1,20 +1,22 @@
 from board import displayBoard, populateBoardFromFEN
-from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter
-from move import generateMoves, makeMove, displayMoves
+from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter, captureList
+from move import generateMoves, makeMove
 from user import userMove
 from evaluate import bestMove
 
-playing = True
-board = populateBoardFromFEN()
+playing: bool = True
+board: list = populateBoardFromFEN()
+previousState: list = []
 gameState: map = {
     "board": board,
     "activeColour": activeColour,
     "castlingRights": castlingRights,
     "enPassantSquare": enPassantSquare,
     "halfMoveClock": halfMoveClock,
-    "fullMoveCounter": fullMoveCounter
+    "fullMoveCounter": fullMoveCounter,
+    "captureList": captureList
 }
-playerColour = input("Playing as w or b: ")
+playerColour: str = input("Playing as w or b: ")
 
 if playerColour not in ["w", "b"]: exit(1)
 if playerColour == "w": engineColour = "b" 
