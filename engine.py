@@ -30,9 +30,7 @@ while playing:
         move = userMove(moves)
         while move == {}:
             move = userMove(moves)
-        gameConfig["activeColour"] = engineColour
     else: 
         move = bestMove(moves)
-        gameConfig["activeColour"] = playerColour
 
-    gameConfig["board"] = makeMove(gameConfig, move)
+    gameConfig = makeMove(gameConfig, move)

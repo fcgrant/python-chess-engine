@@ -19,7 +19,8 @@ positionLookup: map = {
     "a5": 61, "b5": 62, "c5": 63, "d5": 64, "e5": 65, "f5": 66, "g5": 67, "h5": 68,
     "a6": 71, "b6": 72, "c6": 73, "d6": 74, "e6": 75, "f6": 76, "g6": 77, "h6": 78,
     "a7": 81, "b7": 82, "c7": 83, "d7": 84, "e7": 85, "f7": 86, "g7": 87, "h7": 88,
-    "a8": 91, "b8": 92, "c8": 93, "d8": 94, "e8": 95, "f8": 96, "g8": 97, "h8": 98
+    "a8": 91, "b8": 92, "c8": 93, "d8": 94, "e8": 95, "f8": 96, "g8": 97, "h8": 98,
+    "-": 0
 }
 # Directions for each piece to move
 pieceOffset: map = {
@@ -64,6 +65,6 @@ startingFEN: str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".sp
 startingPosition: str = startingFEN[0]
 activeColour: str = startingFEN[1]
 castlingRights: str = startingFEN[2]
-enPassantSquare: str = startingFEN[3]
+enPassantSquare: int = positionLookup[startingFEN[3]]
 halfMoveClock: int = int(startingFEN[4])
 fullMoveCounter: int = int(startingFEN[5])
