@@ -66,11 +66,11 @@ def generateMoves(gameState: map):
                     else: enPassantOffset = -10
                     move["CapturedPiece"] = gameState["board"][targetPosition + enPassantOffset]
 
-                # Check castling rights for the king to castle king side
-                if square == "K" and offset == -2 and "K" in gameState["castlingRights"]:
+                # CASTLING KING SIDE AS WHITE
+                if square == "K" and offset == 2 and "K" in gameState["castlingRights"]:
                     # Check that the path between the king and the kings rook is
                     # unobstructed
-                    
+                    if gameState["board"][targetPosition + 1] != "." or gameState["board"][targetPosition + 2] != ".": break
                     # Check that the king is not in check
                     
                     # Check that squares between the rook and king are not attacked
@@ -79,7 +79,7 @@ def generateMoves(gameState: map):
                     break
                 
                 # Check castling rights for the white king to castle queen side
-                if square == "K" and offset == 2 and "Q" in gameState["castlingRights"]:
+                if square == "K" and offset == -2 and "Q" in gameState["castlingRights"]:
                     # Check that the queens rook is on it's original square
                     if gameState["board"][position + 4] != "R": break
                     # Check that the king is not in check
