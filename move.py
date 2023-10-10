@@ -86,10 +86,9 @@ def generateMoves(gameState: map):
                     moves.append(move)
                     break
                 
-                # Check castling rights for the white king to castle queen side
+                # CASTLING QUEEN SIDE AS WHITE
                 if square == "K" and offset == -2 and "Q" in castlingRights:
-                    # Check that the queens rook is on it's original square
-                    if board[position + 4] != "R": break
+                    # Check that the path 
                     # Check that the king is not in check
                     # Check that squares between the rook and king are not attacked
                     moves.append(move)
@@ -208,3 +207,35 @@ def displayMoves(moves: list):
         piece = move["MovingPiece"]
 
         print(str(piece) + ": " + str(startingPosition) + " to " + str(targetPosition))
+        
+def allowCastle(piece, offset, castlingRights):
+    
+    # If the king is in check, cannot castle
+    
+    # Check for allowing king side castling for white or black
+    if piece in "Kk" and offset == -2 and piece in castlingRights:
+        # Check squares between the king and kings rook are not obstructed
+       
+        # Check squares between king and kings rook are not attacked by opponents
+        # piece
+       
+        return True
+   
+    # Check for allowing queen side castling for white
+    if piece in "K" and offset == 2 and "Q" in castlingRights:
+        # Check squares between the king and queens rook are not obstructed
+       
+        # Check squares between king and queens rook are not attacked by opponents
+        # piece
+    
+        return True
+    
+    # Check for allowing queen side castling for black
+    if piece in "k" and offset == 2 and "q" in castlingRights:
+        # Check squares between the king and queens rook are not obstructed
+       
+        # Check squares between king and queens rook are not attacked by opponents
+        # piece
+    
+        return True
+    return True
