@@ -1,5 +1,8 @@
 board: list = ["x"] * 120
-attackedSquares = [""] * 64
+attackedSquares: map = {
+    "w": [""] * 64,
+    "b": [""] * 64,
+}
 # Stores the index for each position in the 120 size array at the positions they
 # would be in a 64 size array
 boardLookup64: list = [

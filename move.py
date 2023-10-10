@@ -2,11 +2,17 @@ from setup import rank2, rank7, pieceColour, pieceOffset, boardLookup120
 
 def generateMoves(gameState: map):
     moves: list = []
-    opponentColour = "b" if gameState["activeColour"] == "w" else "w"
+    board = gameState["board"]
+    enPassantSquare = gameState["enPassantSquare"]
+    castlingRights = gameState["castlingRights"]
+    activeColour = gameState["activeColour"]
+    attackedSquares = gameState["attackedSquares"]
     
-    for position, square in enumerate(gameState["board"]):
+    opponentColour = "b" if activeColour == "w" else "w"
+    
+    for position, square in enumerate(board):
         if square == "." or square == 'x': continue
-        if pieceColour[square] != gameState["activeColour"]: continue
+        if pieceColour[square] != activeColour: continue
         
         for offset in pieceOffset[square]:
             targetPosition = position
@@ -18,7 +24,7 @@ def generateMoves(gameState: map):
 
             for moveLength in range(moveLimit):
                 targetPosition += offset
-                targetSquare = gameState["board"][targetPosition]
+                targetSquare = board[targetPosition]
 
                 move = {
                     "StartingPosition": position, "TargetPosition": targetPosition,
@@ -31,18 +37,18 @@ def generateMoves(gameState: map):
 
                 # TARGET SQUARE OCCUPIED BY FRIENDLY
                 # If the target square contains a friendly piece, don't consider this offset
-                if pieceColour[targetSquare] == gameState["activeColour"]: break
+                if pieceColour[targetSquare] == activeColour: break
                 
                 # DIAGONAL PAWN CAPTURE
                 # If the current piece is a pawn and the offset is diagonal, only
                 # allow a single move in this direction if the target square is occupied
                 # by an opponents piece or that square can be captured with en Passant
                 if square in "Pp" and offset in [-11, -9, 9, 11] and \
-                    (pieceColour[targetSquare] != opponentColour or targetPosition != gameState["enPassantSquare"]): 
+                    (pieceColour[targetSquare] != opponentColour or targetPosition != enPassantSquare): 
                     # Although the move is not allowed unless an opponents piece
                     # occupies the target square, we still need to add this square
                     # to the attacked squares list
-                    gameState["attackedSquares"][boardLookup120[targetPosition]] += square    
+                    attackedSquares[boardLookup120[targetPosition]] += square    
                     break
 
                 # DOUBLE PAWN PUSHES
@@ -53,7 +59,7 @@ def generateMoves(gameState: map):
                 
                 # If the pawn is making a double move, ensure the square the pawn
                 # is moving over is not occupied
-                if square in "Pp" and offset in [20, -20] and gameState["board"][targetPosition + int(offset / 2)] != '.': break
+                if square in "Pp" and offset in [20, -20] and board[targetPosition + int(offset / 2)] != '.': break
                 
                 # PAWN FORWARD MOVEMENT
                 # Make sure the pawn cannot move forward if the square ahead is
@@ -63,27 +69,27 @@ def generateMoves(gameState: map):
                 # CAPTURE VIA ENPASSANT
                 # If moving to an enpassant square is possible, record the captured
                 # piece as the one in front of the en passant square.
-                if square in "Pp" and offset in [-11, -9, 9, 11] and targetPosition == gameState["enPassantSquare"]:
-                    if gameState["activeColour"] == "w": enPassantOffset = 10
+                if square in "Pp" and offset in [-11, -9, 9, 11] and targetPosition == enPassantSquare:
+                    if activeColour == "w": enPassantOffset = 10
                     else: enPassantOffset = -10
-                    move["CapturedPiece"] = gameState["board"][targetPosition + enPassantOffset]
+                    move["CapturedPiece"] = board[targetPosition + enPassantOffset]
 
                 # CASTLING KING SIDE AS WHITE OR BLACK
-                if square in "Kk" and offset == 2 and square in gameState["castlingRights"]:
+                if square in "Kk" and offset == 2 and square in castlingRights:
                     # Check that the path between the king and the kings rook is
                     # unobstructed
-                    if gameState["board"][targetPosition + 1] != "." or gameState["board"][targetPosition + 2] != ".": break
+                    if board[targetPosition + 1] != "." or board[targetPosition + 2] != ".": break
                     # Check that the king is not in check
                     
                     # Check that squares between the rook and king are not attacked by an opponents piece
-                    if gameState["attackedSquares"][targetPosition + 1] != '' or gameState["attackedSquares"][targetPosition + 2] != '': break
+                    if attackedSquares[targetPosition + 1] != '' or attackedSquares[targetPosition + 2] != '': break
                     moves.append(move)
                     break
                 
                 # Check castling rights for the white king to castle queen side
-                if square == "K" and offset == -2 and "Q" in gameState["castlingRights"]:
+                if square == "K" and offset == -2 and "Q" in castlingRights:
                     # Check that the queens rook is on it's original square
-                    if gameState["board"][position + 4] != "R": break
+                    if board[position + 4] != "R": break
                     # Check that the king is not in check
                     # Check that squares between the rook and king are not attacked
                     moves.append(move)
@@ -92,7 +98,7 @@ def generateMoves(gameState: map):
                 # Append the move to the attack squares, unless the move is 
                 # castling or a pawn moving forward
                 if not((square in "Pp" and offset in [10, 20, -20, -10]) or (square in "Kk" and offset in [-2, 2])):
-                    gameState["attackedSquares"][boardLookup120[targetPosition]] += square
+                    attackedSquares[boardLookup120[targetPosition]] += square
 
                 moves.append(move)
 
