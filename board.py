@@ -1,8 +1,8 @@
-from setup import startingPosition, pieceSymbol, boardLookup, board
+from setup import startingPosition, pieceSymbol, boardLookup64, board
 
 def displayBoard(gameState: map):
     # Strip away the border symbols when displaying the board
-    boardDisplay: list = [ square for index, square in enumerate(gameState["board"]) if index in boardLookup]
+    boardDisplay: list = [ square for index, square in enumerate(gameState["board"]) if index in boardLookup64]
     
     # If the the human player is white, we should display the board with the 
     # white pieces at the bottom
@@ -33,12 +33,12 @@ def populateBoardFromFEN():
     position = ''.join(position)
     
     for piece in position:
-        boardPosition = boardLookup[lookupPosition]
+        boardPosition = boardLookup64[lookupPosition]
         if piece.isnumeric():
             for square in range(int(piece)):
                 board[boardPosition] = "."
                 lookupPosition += 1
-                boardPosition = boardLookup[lookupPosition]
+                boardPosition = boardLookup64[lookupPosition]
         else:
             board[boardPosition] = piece
             lookupPosition += 1

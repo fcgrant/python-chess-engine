@@ -1,11 +1,8 @@
-from setup import rank2, rank7, pieceColour, pieceOffset
+from setup import rank2, rank7, pieceColour, pieceOffset, boardLookup120
 
 def generateMoves(gameState: map):
     moves: list = []
     opponentColour = "b" if gameState["activeColour"] == "w" else "w"
-    
-    # Convert en passant square to board index
-    # enPassantIndex = positionLookup[enPassantSquare]
     
     for position, square in enumerate(gameState["board"]):
         if square == "." or square == 'x': continue
@@ -41,7 +38,12 @@ def generateMoves(gameState: map):
                 # allow a single move in this direction if the target square is occupied
                 # by an opponents piece or that square can be captured with en Passant
                 if square in "Pp" and offset in [-11, -9, 9, 11] and \
-                    (pieceColour[targetSquare] != opponentColour or targetPosition != gameState["enPassantSquare"]): break
+                    (pieceColour[targetSquare] != opponentColour or targetPosition != gameState["enPassantSquare"]): 
+                    # Although the move is not allowed unless an opponents piece
+                    # occupies the target square, we still need to add this square
+                    # to the attacked squares list
+                    gameState["attackedSquares"][boardLookup120[targetPosition]] += square    
+                    break
 
                 # DOUBLE PAWN PUSHES
                 # If the piece is a pawn, it can only move twice if it is on it's
@@ -66,15 +68,15 @@ def generateMoves(gameState: map):
                     else: enPassantOffset = -10
                     move["CapturedPiece"] = gameState["board"][targetPosition + enPassantOffset]
 
-                # CASTLING KING SIDE AS WHITE
-                if square == "K" and offset == 2 and "K" in gameState["castlingRights"]:
+                # CASTLING KING SIDE AS WHITE OR BLACK
+                if square in "Kk" and offset == 2 and square in gameState["castlingRights"]:
                     # Check that the path between the king and the kings rook is
                     # unobstructed
                     if gameState["board"][targetPosition + 1] != "." or gameState["board"][targetPosition + 2] != ".": break
                     # Check that the king is not in check
                     
-                    # Check that squares between the rook and king are not attacked
-                    
+                    # Check that squares between the rook and king are not attacked by an opponents piece
+                    if gameState["attackedSquares"][targetPosition + 1] != '' or gameState["attackedSquares"][targetPosition + 2] != '': break
                     moves.append(move)
                     break
                 
@@ -86,6 +88,11 @@ def generateMoves(gameState: map):
                     # Check that squares between the rook and king are not attacked
                     moves.append(move)
                     break
+                
+                # Append the move to the attack squares, unless the move is 
+                # castling or a pawn moving forward
+                if not((square in "Pp" and offset in [10, 20, -20, -10]) or (square in "Kk" and offset in [-2, 2])):
+                    gameState["attackedSquares"][boardLookup120[targetPosition]] += square
 
                 moves.append(move)
 
@@ -182,17 +189,8 @@ def makeMove(gameState: map, move: map):
 
     return gameState
 
-def undoMove(board: list, move: map):
-    
-    originalPosition = move["StartingPosition"]
-    currentPosition = move["TargetPosition"]
-    capturedPiece = move["CapturedPiece"]
-    movedPiece = board[currentPosition]
-    
-    board[originalPosition] = movedPiece
-    board[currentPosition] = capturedPiece
-    
-    return board
+def undoMove(previousState: list):
+    return previousState[len(previousState) - 1]
 
 def displayMoves(moves: list):
 

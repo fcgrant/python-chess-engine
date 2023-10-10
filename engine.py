@@ -1,5 +1,5 @@
 from board import displayBoard, populateBoardFromFEN
-from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter, captureList
+from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter, captureList, attackedSquares
 from move import generateMoves, makeMove
 from user import userMove
 from evaluate import bestMove
@@ -14,7 +14,8 @@ gameState: map = {
     "enPassantSquare": enPassantSquare,
     "halfMoveClock": halfMoveClock,
     "fullMoveCounter": fullMoveCounter,
-    "captureList": captureList
+    "captureList": captureList,
+    "attackedSquares": attackedSquares
 }
 playerColour: str = input("Playing as w or b: ")
 
@@ -34,5 +35,6 @@ while playing:
             move = userMove(moves)
     else: 
         move = bestMove(moves)
-
+    
+    previousState.append(gameState)
     gameState = makeMove(gameState, move)
