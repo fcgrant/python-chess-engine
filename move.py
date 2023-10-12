@@ -1,4 +1,4 @@
-from setup import rank2, rank7, pieceColour, pieceOffset, boardLookup120
+from setup import rank2, rank7, pieceColour, pieceOffset
 
 def generateMoves(gameState: map):
     moves: list = []
