@@ -1,11 +1,12 @@
-from board import displayBoard, populateBoardFromFEN
-from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter, captureList, attackedSquares
+from board import displayBoard, populateBoardFromFEN, formatAttackSquares
+from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter, captureList
 from move import generateMoves, makeMove
 from user import userMove
 from evaluate import bestMove
 
 playing: bool = True
 board: list = populateBoardFromFEN()
+attackedSquares: map = formatAttackSquares()
 previousState: list = []
 gameState: map = {
     "board": board,

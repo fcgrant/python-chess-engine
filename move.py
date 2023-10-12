@@ -48,7 +48,7 @@ def generateMoves(gameState: map):
                     # Although the move is not allowed unless an opponents piece
                     # occupies the target square, we still need to add this square
                     # to the attacked squares list
-                    attackedSquares[boardLookup120[targetPosition]] += square    
+                    attackedSquares[activeColour][targetPosition] += square    
                     break
 
                 # DOUBLE PAWN PUSHES
@@ -74,30 +74,13 @@ def generateMoves(gameState: map):
                     else: enPassantOffset = -10
                     move["CapturedPiece"] = board[targetPosition + enPassantOffset]
 
-                # CASTLING KING SIDE AS WHITE OR BLACK
-                if square in "Kk" and offset == 2 and square in castlingRights:
-                    # Check that the path between the king and the kings rook is
-                    # unobstructed
-                    if board[targetPosition + 1] != "." or board[targetPosition + 2] != ".": break
-                    # Check that the king is not in check
-                    
-                    # Check that squares between the rook and king are not attacked by an opponents piece
-                    if attackedSquares[targetPosition + 1] != '' or attackedSquares[targetPosition + 2] != '': break
-                    moves.append(move)
-                    break
-                
-                # CASTLING QUEEN SIDE AS WHITE
-                if square == "K" and offset == -2 and "Q" in castlingRights:
-                    # Check that the path 
-                    # Check that the king is not in check
-                    # Check that squares between the rook and king are not attacked
-                    moves.append(move)
-                    break
+                # CASTLING
+                if not castleAllowed(move, offset, gameState): break
                 
                 # Append the move to the attack squares, unless the move is 
                 # castling or a pawn moving forward
                 if not((square in "Pp" and offset in [10, 20, -20, -10]) or (square in "Kk" and offset in [-2, 2])):
-                    attackedSquares[boardLookup120[targetPosition]] += square
+                    attackedSquares[activeColour][targetPosition] += square
 
                 moves.append(move)
 
@@ -208,34 +191,33 @@ def displayMoves(moves: list):
 
         print(str(piece) + ": " + str(startingPosition) + " to " + str(targetPosition))
         
-def allowCastle(piece, offset, castlingRights):
+def castleAllowed(move, offset, gameState):
     
+    castlingRights = gameState["castlingRights"]
+    board = gameState["board"]
+    opponentColour = "b" if gameState["activeColour"] == "w" else "w"
+    attackedSquares = gameState["attackedSquares"][opponentColour]
+    piece = move["MovingPiece"]
+    startingPosition = move["StartingPosition"]
     # If the king is in check, cannot castle
     
-    # Check for allowing king side castling for white or black
-    if piece in "Kk" and offset == -2 and piece in castlingRights:
-        # Check squares between the king and kings rook are not obstructed
-       
-        # Check squares between king and kings rook are not attacked by opponents
-        # piece
-       
-        return True
-   
-    # Check for allowing queen side castling for white
-    if piece in "K" and offset == 2 and "Q" in castlingRights:
-        # Check squares between the king and queens rook are not obstructed
-       
-        # Check squares between king and queens rook are not attacked by opponents
-        # piece
+    # If the moving piece is not a king, cannot castle#
+    if piece not in "Kk": return False
     
-        return True
+    # If the offset is not a castling move, cannot castle
+    if offset not in [2, -2]: return False
     
-    # Check for allowing queen side castling for black
-    if piece in "k" and offset == 2 and "q" in castlingRights:
-        # Check squares between the king and queens rook are not obstructed
-       
-        # Check squares between king and queens rook are not attacked by opponents
-        # piece
+    # If king side castle is attempted, but rights are revoked, cannot castle
+    if offset == 2 and piece not in castlingRights: return False
     
-        return True
+    # If queen side castle is attempted, but rights are revoked, cannot castle
+    if piece == "K" and offset == -2 and "Q" not in castlingRights: return False
+    if piece == "k" and offset == -2 and "q" not in castlingRights: return False
+
+    # If squares between the king and target square are obstructed, cannot castle
+    if board[startingPosition + (offset/2)] != '.' or board[startingPosition + offset] != '.': return False
+    
+    # If squares between king and target square are attacked by opponent, cannot castle 
+    if attackedSquares[opponentColour][startingPosition + (offset/2)] != "" or attackedSquares[opponentColour][startingPosition + offset] != "": return False
+    
     return True

@@ -1,4 +1,4 @@
-from setup import startingPosition, pieceSymbol, boardLookup64, board
+from setup import startingPosition, pieceSymbol, boardLookup64, board, attackedSquares
 
 def displayBoard(gameState: map):
     # Strip away the border symbols when displaying the board
@@ -44,3 +44,14 @@ def populateBoardFromFEN():
             lookupPosition += 1
     
     return board
+
+
+def formatAttackSquares():
+    
+    for index, square in enumerate(attackedSquares["w"]):
+        if index in boardLookup64:
+            attackedSquares["w"][index] = ""
+            attackedSquares["b"][index] = ""
+            
+    return attackedSquares
+    
