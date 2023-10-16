@@ -1,10 +1,9 @@
 from setup import rank2, rank7, pieceColour, pieceOffset
-
+from math import floor
 def generateMoves(gameState: map):
     moves: list = []
     board = gameState["board"]
     enPassantSquare = gameState["enPassantSquare"]
-    castlingRights = gameState["castlingRights"]
     activeColour = gameState["activeColour"]
     attackedSquares = gameState["attackedSquares"]
     
@@ -38,7 +37,7 @@ def generateMoves(gameState: map):
                 # TARGET SQUARE OCCUPIED BY FRIENDLY
                 # If the target square contains a friendly piece, don't consider this offset
                 if pieceColour[targetSquare] == activeColour: break
-                
+
                 # DIAGONAL PAWN CAPTURE
                 # If the current piece is a pawn and the offset is diagonal, only
                 # allow a single move in this direction if the target square is occupied
@@ -56,16 +55,16 @@ def generateMoves(gameState: map):
                 # starting square
                 if square == "P" and offset == 20 and position not in rank2: break
                 if square == "p" and offset == -20 and position not in rank7: break
-                
+
                 # If the pawn is making a double move, ensure the square the pawn
                 # is moving over is not occupied
                 if square in "Pp" and offset in [20, -20] and board[targetPosition + int(offset / 2)] != '.': break
-                
+
                 # PAWN FORWARD MOVEMENT
                 # Make sure the pawn cannot move forward if the square ahead is
                 # blocked by an opponents piece
                 if square in "Pp" and offset in [10, -10, 20, -20] and pieceColour[targetSquare] == opponentColour: break
-                
+
                 # CAPTURE VIA ENPASSANT
                 # If moving to an enpassant square is possible, record the captured
                 # piece as the one in front of the en passant square.
@@ -75,8 +74,8 @@ def generateMoves(gameState: map):
                     move["CapturedPiece"] = board[targetPosition + enPassantOffset]
 
                 # CASTLING
-                if not castleAllowed(move, offset, gameState): break
-                
+                if square in "Kk" and offset in [2, -2] and not castleAllowed(move, offset, gameState): break
+
                 # Append the move to the attack squares, unless the move is 
                 # castling or a pawn moving forward
                 if not((square in "Pp" and offset in [10, 20, -20, -10]) or (square in "Kk" and offset in [-2, 2])):
@@ -191,7 +190,7 @@ def displayMoves(moves: list):
 
         print(str(piece) + ": " + str(startingPosition) + " to " + str(targetPosition))
         
-def castleAllowed(move, offset, gameState):
+def castleAllowed(move: map, offset: int, gameState: map):
     
     castlingRights = gameState["castlingRights"]
     board = gameState["board"]
@@ -200,6 +199,7 @@ def castleAllowed(move, offset, gameState):
     piece = move["MovingPiece"]
     startingPosition = move["StartingPosition"]
     # If the king is in check, cannot castle
+    if isInCheck(gameState): return False
     
     # If the moving piece is not a king, cannot castle#
     if piece not in "Kk": return False
@@ -215,9 +215,29 @@ def castleAllowed(move, offset, gameState):
     if piece == "k" and offset == -2 and "q" not in castlingRights: return False
 
     # If squares between the king and target square are obstructed, cannot castle
-    if board[startingPosition + (offset/2)] != '.' or board[startingPosition + offset] != '.': return False
+    if board[startingPosition + int(offset/2)] != '.' or board[startingPosition + offset] != '.': return False
     
     # If squares between king and target square are attacked by opponent, cannot castle 
-    if attackedSquares[opponentColour][startingPosition + (offset/2)] != "" or attackedSquares[opponentColour][startingPosition + offset] != "": return False
+    if attackedSquares[startingPosition + int(offset/2)] != "" or attackedSquares[startingPosition + offset] != "": return False
     
     return True
+
+def isInCheck(gameState: map):
+    
+    activeColour: str = gameState["activeColour"]
+    activeKing = "K" if activeColour == "w" else "k"
+    opponentColour: str = "b" if activeColour == "w" else "w"
+    attackedSquares: list = gameState["attackedSquares"][opponentColour]
+    board: list = gameState["board"]
+    
+    for index, square in enumerate(board):
+        if square == activeKing: kingSquare = index
+    
+    attackingPieces = attackedSquares[kingSquare]
+    if attackingPieces == 'x' or attackingPieces == '': return False
+    
+    for piece in attackingPieces:
+        if pieceColour[piece] == opponentColour: return True
+        
+    return False
+        
