@@ -1,5 +1,5 @@
 board: list = ["x"] * 120
-attackedSquares: map = {
+attackedSquares: dict = {
     "w": ["x"] * 120,
     "b": ["x"] * 120,
 }
@@ -17,7 +17,7 @@ boardLookup64: list = [
 ]
 # Stores the index for each position in the 64 size array at the positions they
 # have in the 120 size array
-positionLookup: map = {
+positionLookup: dict = {
     "a1": 21, "b1": 22, "c1": 23, "d1": 24, "e1": 25, "f1": 26, "g1": 27, "h1": 28,
     "a2": 31, "b2": 32, "c2": 33, "d2": 34, "e2": 35, "f2": 36, "g2": 37, "h2": 38,
     "a3": 41, "b3": 42, "c3": 43, "d3": 44, "e3": 45, "f3": 46, "g3": 47, "h3": 48,
@@ -29,7 +29,7 @@ positionLookup: map = {
     "-": 0
 }
 # Directions for each piece to move
-pieceOffset: map = {
+pieceOffset: dict = {
     "P": [10, 20, 9, 11],
     "N": [-19, -21, 21, 19, -8, -12, 12, 8],
     "B": [-9, -11, 11, 9],
@@ -43,12 +43,12 @@ pieceOffset: map = {
     "q": [-10, 1, 10, -1, -9, -11, 11, 9],
     "k": [-10, 1, 10, -1, -9, -11, 11, 9, 2, -2]
 }
-pieceSymbol: map = {
+pieceSymbol: dict = {
     "p": "♙", "n": "♘", "b": "♗", "r": "♖", "q": "♕", "k": "♔",
     "P": "♟", "N": "♞", "B": "♝", "R": "♜", "Q": "♛", "K": "♚",
     ".": "·", " ": " "
 }
-pieceColour: map = {
+pieceColour: dict = {
     "P": "w",
     "N": "w",
     "B": "w",
@@ -64,7 +64,11 @@ pieceColour: map = {
     ".": "No Colour",
     "": "No Colour"
 }
-captureList: map = {
+captureList: dict = {
+    "w": [],
+    "b": []
+}
+attacksOnKing: dict = {
     "w": [],
     "b": []
 }
@@ -72,10 +76,16 @@ captureList: map = {
 rank2: list = [31, 32, 33, 34, 35, 36, 37, 38]
 rank7: list = [81, 82, 83, 84, 85, 86, 87, 88]
 
-startingFEN: str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".split(" ")
-startingPosition: str = startingFEN[0]
-activeColour: str = startingFEN[1]
-castlingRights: str = startingFEN[2]
-enPassantSquare: int = positionLookup[startingFEN[3]]
-halfMoveClock: int = int(startingFEN[4])
-fullMoveCounter: int = int(startingFEN[5])
+FEN: str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+startingPosition: str = FEN.split(" ")[0]
+gameState: dict = {
+    "board": board,
+    "activeColour": FEN.split(" ")[1],
+    "castlingRights": FEN.split(" ")[2],
+    "enPassantSquare": positionLookup[FEN.split(" ")[3]],
+    "halfMoveClock": int(FEN.split(" ")[4]),
+    "fullMoveCounter": int(FEN.split(" ")[5]),
+    "captureList": captureList,
+    "attackedSquares": attackedSquares,
+    "attacksOnKing": attacksOnKing
+}

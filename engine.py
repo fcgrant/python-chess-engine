@@ -1,23 +1,14 @@
 from board import displayBoard, populateBoardFromFEN, formatAttackSquares
-from setup import activeColour, enPassantSquare, castlingRights, halfMoveClock, fullMoveCounter, captureList
-from move import generateMoves, makeMove
+from setup import gameState
+from move import generateMoves, makeMove, calculateKingAttacks
 from user import userMove
 from evaluate import bestMove
 
 playing: bool = True
-board: list = populateBoardFromFEN()
-attackedSquares: map = formatAttackSquares()
+gameState["board"] = populateBoardFromFEN()
+gameState["attackedSquares"] = formatAttackSquares()
+gameState["attacksOnKing"] = calculateKingAttacks(gameState)
 previousState: list = []
-gameState: map = {
-    "board": board,
-    "activeColour": activeColour,
-    "castlingRights": castlingRights,
-    "enPassantSquare": enPassantSquare,
-    "halfMoveClock": halfMoveClock,
-    "fullMoveCounter": fullMoveCounter,
-    "captureList": captureList,
-    "attackedSquares": attackedSquares
-}
 playerColour: str = input("Playing as w or b: ")
 
 if playerColour not in ["w", "b"]: exit(1)
